@@ -1,205 +1,187 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Nathan | Digital Universe</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nathan | Unlock</title>
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Courier+Prime:wght@400;700&display=swap');
 
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Orbitron', sans-serif;
 }
 
 body {
-  background: black;
+  background: #f5f1e8;
+  color: #2b241b;
+  height: 100vh;
   overflow: hidden;
-  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Courier Prime', monospace;
 }
 
-/* Background glow grid */
-.grid {
-  position: fixed;
-  width: 100%;
-  height: 100%;
-  background-image: linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
-                    linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
-  background-size: 40px 40px;
-  animation: moveGrid 10s linear infinite;
-  z-index: 0;
-}
-
-@keyframes moveGrid {
-  from { transform: translateY(0px); }
-  to { transform: translateY(40px); }
-}
-
-/* Particle canvas */
-canvas {
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 1;
-}
-
-/* Main card */
-.card {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 2;
+/* GAME SCREEN */
+#game {
   text-align: center;
-  padding: 30px;
-  border-radius: 20px;
-  background: rgba(255,255,255,0.05);
-  backdrop-filter: blur(20px);
-  box-shadow: 0 0 40px rgba(0,255,255,0.3);
-  width: 90%;
-  max-width: 420px;
+  padding: 20px;
 }
 
-/* PP (profile picture) */
-.pp {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  border: 3px solid cyan;
-  margin: 10px auto;
-  overflow: hidden;
-  box-shadow: 0 0 25px cyan;
-}
-
-.pp img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-/* Name glow */
 h1 {
-  font-size: 26px;
-  margin-top: 10px;
-  text-shadow: 0 0 10px cyan, 0 0 20px blue;
+  font-size: 24px;
+  letter-spacing: 3px;
+  margin-bottom: 10px;
 }
 
-p {
-  font-size: 14px;
+#counter {
+  font-size: 18px;
   margin-top: 10px;
   opacity: 0.8;
 }
 
-.badges {
-  margin-top: 15px;
-}
-
-.badge {
-  display: inline-block;
-  padding: 5px 10px;
-  margin: 5px;
-  border: 1px solid cyan;
-  border-radius: 12px;
-  font-size: 12px;
-  box-shadow: 0 0 10px cyan;
-}
-
-/* Button glow */
-button {
-  margin-top: 15px;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 12px;
-  background: cyan;
-  color: black;
-  font-weight: bold;
+.box {
+  width: 80px;
+  height: 80px;
+  margin: 30px auto;
+  background: #2b241b;
   cursor: pointer;
-  box-shadow: 0 0 20px cyan;
-  transition: 0.3s;
+  transition: 0.2s;
+  border-radius: 10px;
 }
 
-button:hover {
-  transform: scale(1.1);
-  box-shadow: 0 0 40px cyan;
+.box:active {
+  transform: scale(0.9);
+}
+
+/* BACKGROUND (hidden first) */
+#background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(120deg, #2b241b, #f5f1e8);
+  transform: translateY(100%);
+  transition: 1.5s ease;
+  z-index: -1;
+}
+
+/* WELCOME SCREEN */
+#welcome {
+  position: absolute;
+  text-align: center;
+  opacity: 0;
+  transition: 2s ease;
+}
+
+#welcome h2 {
+  font-size: 40px;
+  letter-spacing: 5px;
+  animation: fontSwitch 3s infinite;
+}
+
+/* changing fonts animation */
+@keyframes fontSwitch {
+  0% { font-family: 'Courier Prime'; }
+  25% { font-family: 'Playfair Display'; }
+  50% { font-family: 'Courier Prime'; }
+  75% { font-family: 'Playfair Display'; }
+  100% { font-family: 'Courier Prime'; }
+}
+
+/* INFO PANEL */
+#info {
+  position: absolute;
+  bottom: 40px;
+  text-align: center;
+  opacity: 0;
+  transition: 2s ease;
+  max-width: 80%;
+}
+
+#info p {
+  margin-top: 10px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* ACTIVE STATES */
+.show-bg {
+  transform: translateY(0%);
+}
+
+.show {
+  opacity: 1 !important;
+}
+
+.hide {
+  display: none;
 }
 </style>
 </head>
 
 <body>
 
-<div class="grid"></div>
-<canvas id="particles"></canvas>
+<div id="background"></div>
 
-<div class="card">
-  <div class="pp">
-    <!-- PUT YOUR IMAGE HERE -->
-    <img src="https://i.imgur.com/8Km9tLL.png" alt="profile">
-  </div>
+<!-- GAME -->
+<div id="game">
+  <h1>UNLOCK THE IDENTITY</h1>
+  <p>Click the block 7 times to reveal Nathan</p>
 
-  <h1>Nathan</h1>
-  <p>Web Developer • Anime Mindset • Digital Builder</p>
+  <div class="box" onclick="clickBox()"></div>
 
-  <div class="badges">
-    <div class="badge">HTML Master</div>
-    <div class="badge">GitHub Creator</div>
-    <div class="badge">AI Builder</div>
-    <div class="badge">Future Legend</div>
-  </div>
+  <div id="counter">Progress: 0 / 7</div>
+</div>
 
-  <button onclick="alert('Welcome to my universe 🚀')">Enter My World</button>
+<!-- WELCOME -->
+<div id="welcome">
+  <h2>WELCOME</h2>
+</div>
+
+<!-- INFO -->
+<div id="info">
+  <h3>NATHAN</h3>
+  <p>
+    Web Developer • Digital Builder • Anime Mindset<br><br>
+    I create websites, AI ideas, and future systems.
+    If you're here, you're early.
+  </p>
 </div>
 
 <script>
-// PARTICLE SYSTEM (anime glow dots)
-const canvas = document.getElementById("particles");
-const ctx = canvas.getContext("2d");
+let clicks = 0;
 
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+function clickBox() {
+  clicks++;
+  document.getElementById("counter").innerText = `Progress: ${clicks} / 7`;
 
-let particles = [];
-
-for (let i = 0; i < 80; i++) {
-  particles.push({
-    x: Math.random() * canvas.width,
-    y: Math.random() * canvas.height,
-    r: Math.random() * 3 + 1,
-    dx: (Math.random() - 0.5) * 1,
-    dy: (Math.random() - 0.5) * 1
-  });
-}
-
-function draw() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  for (let p of particles) {
-    ctx.beginPath();
-    ctx.fillStyle = "cyan";
-    ctx.shadowBlur = 15;
-    ctx.shadowColor = "cyan";
-    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-    ctx.fill();
-
-    p.x += p.dx;
-    p.y += p.dy;
-
-    if (p.x < 0 || p.x > canvas.width) p.dx *= -1;
-    if (p.y < 0 || p.y > canvas.height) p.dy *= -1;
+  if (clicks >= 7) {
+    unlock();
   }
-
-  requestAnimationFrame(draw);
 }
 
-draw();
+function unlock() {
+  document.getElementById("game").classList.add("hide");
 
-window.addEventListener("resize", () => {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-});
+  // slide background in
+  document.getElementById("background").classList.add("show-bg");
+
+  // show welcome
+  setTimeout(() => {
+    document.getElementById("welcome").classList.add("show");
+  }, 800);
+
+  // show info
+  setTimeout(() => {
+    document.getElementById("info").classList.add("show");
+  }, 1800);
+}
 </script>
 
 </body>
-  </html>
+</html>
